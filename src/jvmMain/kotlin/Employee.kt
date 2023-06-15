@@ -40,20 +40,11 @@ class Employee(employeeNameToSet: String) {
         this.addTotalWorks(numberOfManipulations)
         this.addTotalMoney(priceOfManipulation)
 
-        println(number)
-        println(money)
-
-
-        println()
-        println(tempMap[codeOfManipulation])
-
         if (worksToChange == 0) {
             this.setGeneralWorks(tempMap)
         } else {
             this.setAdditionalWorks(tempMap)
         }
-
-        println(this.generalWorks[codeOfManipulation])
     }
 
     fun addTotalMoney(moneyToAdd: Int) {
