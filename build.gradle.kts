@@ -24,6 +24,8 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("org.apache.poi:poi:3.9")
+                implementation("org.apache.poi:poi-ooxml:3.17")
             }
         }
         val jvmTest by getting
