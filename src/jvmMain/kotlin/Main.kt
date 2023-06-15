@@ -11,13 +11,13 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import Employee
 
 data class ListItem(
     val title: String,
@@ -42,10 +42,9 @@ fun App() {
     var groups = arrayOf("group1", "group2", "Отмена")
     var employees by remember {
         mutableStateOf(
-            (1..5).map {
-                ListItem(
-                    title = "Шевцова $it",
-                    isSelected = false
+            (1..20).map {
+                Employee(
+                    employeeNameToSet = "hello"
                 )
             }
         )
@@ -98,7 +97,8 @@ fun App() {
                                 .clickable {
                                     employees = employees.mapIndexed { j, item ->
                                         if (i == j) {
-                                            item.copy(isSelected = !item.isSelected)
+                                            item.switchChosenLeft()
+                                            item.copy()
                                         } else item
                                     }
                                 }
@@ -106,8 +106,8 @@ fun App() {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(text = employees[i].title)
-                            if(employees[i].isSelected) {
+                            Text(text = employees[i].employeeName)
+                            if(employees[i].isChosenLeft()) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Selected",
@@ -229,7 +229,8 @@ fun App() {
                             .clickable {
                                 employees = employees.mapIndexed { j, item ->
                                     if (i == j) {
-                                        item.copy(isSelected = !item.isSelected)
+                                        item.switchChosenRight()
+                                        item.copy()
                                     } else item
                                 }
                             }
@@ -237,8 +238,8 @@ fun App() {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(text = employees[i].title)
-                            if(employees[i].isSelected) {
+                            Text(text = employees[i].employeeName)
+                            if(employees[i].isChosenRight()) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Selected",

@@ -1,5 +1,5 @@
 //class to create an employee
-class Employee(employeeNameToSet: String) {
+data class Employee(val employeeNameToSet: String) {
     val employeeName = employeeNameToSet
     private var totalMoney = 0
     private var totalWorks = 0
