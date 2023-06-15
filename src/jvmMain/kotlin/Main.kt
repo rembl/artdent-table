@@ -1,18 +1,19 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -27,12 +28,23 @@ data class ListItem(
 @Preview
 fun App() {
     val baseColor = Color(240,220,4)
-    var text by remember { mutableStateOf("Hello, World!") }
-    var items by remember {
+    val secondaryColor = Color(174, 160, 0)
+    val backgroundColor = Color(151, 145, 112, 50)
+    val backgroundFullColor = Color(151, 145, 112)
+    val listItemWidth = 200.dp
+    val listItemHeight = 43.dp
+    val listHeight = 400.dp
+    val textFieldHeight = 50.dp
+    var stateLeft by remember { mutableStateOf("") }
+    var stateRight by remember { mutableStateOf("") }
+    var groupsExpanded by remember { mutableStateOf(false) }
+    var groupText by remember { mutableStateOf("Выберите группу") }
+    var groups = arrayOf("group1", "group2", "Отмена")
+    var employees by remember {
         mutableStateOf(
-            (1..20).map {
+            (1..5).map {
                 ListItem(
-                    title = "Item $it",
+                    title = "Шевцова $it",
                     isSelected = false
                 )
             }
@@ -40,94 +52,210 @@ fun App() {
     }
 
     MaterialTheme {
-        Column {
-            Button(onClick = {
-                text = "Hello, Desktop!"
-            },
+        Column(modifier = Modifier.absoluteOffset(30.dp, 30.dp)) {
+
+            Button(onClick = { findEmployees() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
-                modifier = Modifier.absoluteOffset(50.dp, 30.dp))
+                modifier = Modifier
+                    .absoluteOffset(15.dp, 0.dp)
+                    .width(170.dp))
             {
-                Text(text)
+                Text("Найти техников")
             }
 
-            LazyColumn(modifier = Modifier
-                .absoluteOffset(20.dp, 30.dp)
-                .width(200.dp)
-                .height(400.dp)) {
-                items(items.size) { i ->
-                    Row(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(40.dp)
-                            .clickable {
-                                items = items.mapIndexed { j, item ->
-                                    if (i == j) {
-                                        item.copy(isSelected = !item.isSelected)
-                                    } else item
+            Column(modifier = Modifier
+                .width(listItemWidth)
+                .height(listHeight)
+                .absoluteOffset(0.dp, 5.dp)
+                .background(backgroundColor, shape = RoundedCornerShape(7.dp))) {
+
+                TextField(modifier = Modifier
+                    .height(textFieldHeight)
+                    .width(listItemWidth),
+                    value = stateLeft,
+                    onValueChange = { value ->
+                        stateLeft = value
+                    },
+
+                    colors = TextFieldDefaults.textFieldColors(
+                        leadingIconColor = Color.Black,
+                        focusedIndicatorColor = backgroundFullColor,
+                        backgroundColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = ""
+                        )
+                    })
+
+                LazyColumn() {
+                    items(employees.size) { i ->
+                        Row(modifier = Modifier
+                                .width(listItemWidth)
+                                .height(listItemHeight)
+                                .clickable {
+                                    employees = employees.mapIndexed { j, item ->
+                                        if (i == j) {
+                                            item.copy(isSelected = !item.isSelected)
+                                        } else item
+                                    }
                                 }
+                                .padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(text = employees[i].title)
+                            if(employees[i].isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Selected",
+                                    tint = secondaryColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
-                            .padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = items[i].title)
-                        if(items[i].isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Selected",
-                                tint = baseColor,
-                                modifier = Modifier.size(20.dp)
-                            )
                         }
                     }
                 }
             }
+
         }
 
-        Column {
+        Column(modifier = Modifier.absoluteOffset(245.dp, 150.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = {
-                text = "Hello, Desktop!"
+
             },
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
-                modifier = Modifier.absoluteOffset(350.dp, 30.dp))
-            {
-                Text(text)
+                modifier = Modifier
+                    .width(110.dp)) {
+                Text("Добавить")
+            }
+            Button(onClick = {
+
+            },
+                colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
+                modifier = Modifier
+                    .width(110.dp)) {
+                Text("Удалить")
+            }
+            Button(onClick = {
+
+            },
+                colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
+                modifier = Modifier
+                    .width(150.dp)) {
+                Text("Добавить всех")
+            }
+            Button(onClick = {
+
+            },
+                colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
+                modifier = Modifier
+                    .width(150.dp)) {
+                Text("Удалить всех")
+            }
+        }
+
+        Column(modifier = Modifier.absoluteOffset(410.dp, 30.dp)) {
+
+            Box() {
+                Button(onClick = {
+                    groupsExpanded = true
+                },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
+                    modifier = Modifier
+                        .absoluteOffset(15.dp, 0.dp)
+                        .width(170.dp))
+                {
+                    Text(groupText)
+                }
+                DropdownMenu(
+                    expanded = groupsExpanded,
+                    onDismissRequest = {
+                        groupsExpanded = false
+                    },
+                    offset = DpOffset(15.dp, 0.dp)
+                ) {
+                    // adding items
+                    groups.forEachIndexed { _, itemValue ->
+                        DropdownMenuItem(
+                            onClick = {
+                                groupText = if (itemValue == "Отмена") "Выберите группу"
+                                else itemValue
+                                groupsExpanded = false
+                            }
+                        ) {
+                            Text(text = itemValue)
+                        }
+                    }
+                }
             }
 
-            LazyColumn(modifier = Modifier
-                .absoluteOffset(320.dp, 30.dp)
-                .width(200.dp)
-                .height(400.dp)) {
-                items(items.size) { i ->
-                    Row(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(40.dp)
+            Column(modifier = Modifier
+                .width(listItemWidth)
+                .height(listHeight)
+                .absoluteOffset(0.dp, 5.dp)
+                .background(backgroundColor, shape = RoundedCornerShape(7.dp))) {
+
+                TextField(modifier = Modifier
+                    .height(textFieldHeight)
+                    .width(listItemWidth),
+                    value = stateRight,
+                    onValueChange = { value ->
+                        stateRight = value
+                    },
+
+                    colors = TextFieldDefaults.textFieldColors(
+                        leadingIconColor = Color.Black,
+                        focusedIndicatorColor = backgroundFullColor,
+                        backgroundColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = ""
+                        )
+                    })
+
+                LazyColumn() {
+                    items(employees.size) { i ->
+                        Row(modifier = Modifier
+                            .width(listItemWidth)
+                            .height(listItemHeight)
                             .clickable {
-                                items = items.mapIndexed { j, item ->
+                                employees = employees.mapIndexed { j, item ->
                                     if (i == j) {
                                         item.copy(isSelected = !item.isSelected)
                                     } else item
                                 }
                             }
                             .padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = items[i].title)
-                        if(items[i].isSelected) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Selected",
-                                tint = baseColor,
-                                modifier = Modifier.size(20.dp)
-                            )
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(text = employees[i].title)
+                            if(employees[i].isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Selected",
+                                    tint = secondaryColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+fun findEmployees() {
+    TODO("Not yet implemented")
 }
 
 fun main() = application {
