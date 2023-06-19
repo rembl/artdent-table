@@ -12,6 +12,7 @@ data class Employee(val employeeNameToSet: String) {
     private var shownRight = false
     private var chosenLeft = false
     private var chosenRight = false
+    var isChecked = false
 
     fun setGeneralWorks(generalWorksToSet: HashMap<Int, MutableList<Int>>) {
         this.generalWorks = generalWorksToSet

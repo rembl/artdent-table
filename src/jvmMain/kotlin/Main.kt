@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import Employee
+import androidx.compose.ui.text.font.FontWeight
 
 data class ListItem(
     val title: String,
@@ -38,6 +38,9 @@ fun App() {
     var stateLeft by remember { mutableStateOf("") }
     var stateRight by remember { mutableStateOf("") }
     var groupsExpanded by remember { mutableStateOf(false) }
+
+    val state = MainViewModel.employeesListStateLeft.value
+
     var groupText by remember { mutableStateOf("Выберите группу") }
     var groups = arrayOf("group1", "group2", "Отмена")
     var employees by remember {
@@ -59,7 +62,7 @@ fun App() {
                     .absoluteOffset(15.dp, 0.dp)
                     .width(170.dp))
             {
-                Text("Найти техников")
+                Text("Найти техников", fontWeight = FontWeight.Bold)
             }
 
             Column(modifier = Modifier
@@ -90,24 +93,20 @@ fun App() {
                     })
 
                 LazyColumn() {
-                    items(employees.size) { i ->
-                        Row(modifier = Modifier
+                    items(state.size) { i ->
+                        Box(modifier = Modifier
+                            .clickable(
+                                onClick = { MainViewModel.onEvent(Event.OnItemClickLeft(i)) }
+                            )
                                 .width(listItemWidth)
                                 .height(listItemHeight)
-                                .clickable {
-                                    employees = employees.mapIndexed { j, item ->
-                                        if (i == j) {
-                                            item.switchChosenLeft()
-                                            item.copy()
-                                        } else item
-                                    }
-                                }
                                 .padding(10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
+                            //horizontalArrangement = Arrangement.SpaceBetween,
+                            //verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(text = employees[i].employeeName)
-                            if(employees[i].isChosenLeft()) {
+                            if(employees[i].isChecked) {
+                                println("hello")
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Selected",
@@ -131,7 +130,7 @@ fun App() {
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
                 modifier = Modifier
                     .width(110.dp)) {
-                Text("Добавить")
+                Text("Добавить", fontWeight = FontWeight.Bold)
             }
             Button(onClick = {
 
@@ -139,23 +138,23 @@ fun App() {
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
                 modifier = Modifier
                     .width(110.dp)) {
-                Text("Удалить")
+                Text("Удалить", fontWeight = FontWeight.Bold)
             }
             Button(onClick = {
 
             },
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
                 modifier = Modifier
-                    .width(150.dp)) {
-                Text("Добавить всех")
+                    .width(155.dp)) {
+                Text("Добавить всех", fontWeight = FontWeight.Bold)
             }
             Button(onClick = {
 
             },
                 colors = ButtonDefaults.buttonColors(backgroundColor = baseColor),
                 modifier = Modifier
-                    .width(150.dp)) {
-                Text("Удалить всех")
+                    .width(155.dp)) {
+                Text("Удалить всех", fontWeight = FontWeight.Bold)
             }
         }
 
@@ -170,7 +169,7 @@ fun App() {
                         .absoluteOffset(15.dp, 0.dp)
                         .width(170.dp))
                 {
-                    Text(groupText)
+                    Text(groupText, fontWeight = FontWeight.Bold)
                 }
                 DropdownMenu(
                     expanded = groupsExpanded,
@@ -226,14 +225,10 @@ fun App() {
                         Row(modifier = Modifier
                             .width(listItemWidth)
                             .height(listItemHeight)
-                            .clickable {
-                                employees = employees.mapIndexed { j, item ->
-                                    if (i == j) {
-                                        item.switchChosenRight()
-                                        item.copy()
-                                    } else item
-                                }
-                            }
+                            .clickable (
+                                onClick = { MainViewModel.onEvent(Event.OnItemClickRight(i)) }
+                            )
+
                             .padding(10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
